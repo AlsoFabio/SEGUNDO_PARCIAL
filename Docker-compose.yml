@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  database:
+    image: mysql:8.0.33
+    container_name: my_mysql
+    ports:
+      - 3310:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD= mysecretpassword
+      - MYSQL_DATABASE= mysql
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+
+  mi-servidor:
+    container_name: express-server
+    build:
+      context: ./servidor
+      dockerfile: Dockerfile
+    ports:
+      - 4000:4000
+    depends_on:
+      - database
+    environment:
+      - MYSQL_HOST=database
+      - MYSQL_PORT=3310
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=mysecretpassword
+      - MYSQL_NAME=mysql
+      - PORT=4000
+    volumes:
+      - ./server:/server
+    restart: always
